@@ -18,6 +18,8 @@ public class HelloController {
 
     @GetMapping("/session-id")
     public String getSessionId(HttpServletRequest request) {
+        // you see the id that in the inspect > network > cookie > JSESSIONID
+        // does not matter the url you go through you will get same session id
         return "welcome to Spring Security " + request.getSession().getId();
 
     }
