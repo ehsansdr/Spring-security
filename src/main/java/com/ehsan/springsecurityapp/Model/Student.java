@@ -1,4 +1,4 @@
-package com.ehsan.springsecurityapp;
+package com.ehsan.springsecurityapp.Model;
 
 public class Student {
     private int id;

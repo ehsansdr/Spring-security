@@ -1,4 +1,4 @@
-package com.ehsan.springsecurityapp;
+package com.ehsan.springsecurityapp.Controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
@@ -30,12 +30,12 @@ public class HelloController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
-            // Get the User object (assuming you're using Spring Security's UserDetailsService)
+            // Get the Users object (assuming you're using Spring Security's UserDetailsService)
             User principal = (User) authentication.getPrincipal();
 
             // If you store user ID as a custom attribute, you can retrieve it here.
             // This example assumes the user ID is part of the username or in a custom property.
-            String userId = principal.getUsername();  // or principal.getId() if you have a custom User class
+            String userId = principal.getUsername();  // or principal.getId() if you have a custom Users class
             return userId;
         }
 
