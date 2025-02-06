@@ -9,6 +9,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -21,7 +26,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-
+/*
         // CSRF (Cross-Site Request Forgery) protection is enabled by default in Spring Security.
         // This line disables CSRF protection
         // In stateless applications (like APIs), CSRF protection is often not needed
@@ -70,8 +75,8 @@ public class SecurityConfig {
         // (like those using cookies for session management).
 
         return http.build();
+        */
 
-        /*
         // OR IN THE BUILDER PATTERN
         return http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -81,9 +86,33 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build(); // This essentially creates the filter chain with the default security settings.
-        */
     }
 
 
+    // @Bean
+    public UserDetailsService userDetailsService(){
+        // we can use this because this class implement the UserDetailsService
+        // you may customize this
+
+        // if you use this user pass you can use the given user pass word in the
+        // application.properties
+        UserDetails user1 = User
+                .withDefaultPasswordEncoder()
+                .username("novin")
+                .password("n@123")
+                .roles("USER")
+                .build();
+
+        // you can create more user
+
+        UserDetails user2 = User
+                .withDefaultPasswordEncoder()
+                .username("harsh")
+                .password("H@123")
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user1,user2);
+    }
 
 }
