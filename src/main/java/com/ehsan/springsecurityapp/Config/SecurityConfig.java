@@ -6,27 +6,52 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+//This annotation is used to enable Spring Security’s web security features.
+// It triggers the configuration of Spring Security
+// by creating a SecurityConfig class where you define your custom security settings.
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(customizer -> customizer.disable()); // disable csrf
 
+        // CSRF (Cross-Site Request Forgery) protection is enabled by default in Spring Security.
+        // This line disables CSRF protection
+        // In stateless applications (like APIs), CSRF protection is often not needed
+        // because requests don't carry a session state,
+        // and tokens aren't required.
+        http.csrf(customizer -> customizer.disable()); // disable csrf
+        // you can do that in this way :
+//        Customizer<CsrfConfigurer<HttpSecurity>> custCsrf =
+//                new Customizer<CsrfConfigurer<HttpSecurity>>() {
+//                    @Override
+//                    public void customize(CsrfConfigurer<HttpSecurity> customizer) {
+//                        customizer.disable();
+//                    }
+//                };
+//        http.csrf(custCsrf);
+        // the upper line is equal to http.csrf(customizer -> customizer.disable());
+
+
+        // This defines authorization rules for incoming HTTP requests.
+        // It says that all requests must be authenticated.
         http.authorizeHttpRequests(request ->
                 request.anyRequest().authenticated());
-
         // http.formLogin(Customizer.withDefaults());
 
         // with out this you can see the page in chrome but even if you
         // send request with postman you will get 200 but the login page not
         // the real page
         http.httpBasic(Customizer.withDefaults());
+        // This means that the server will expect the client to provide credentials
+        // (username and password) in the Authorization header of the HTTP request.
 
 
         // with this and http.formLogin(Customizer.withDefaults()); with each other
@@ -36,10 +61,27 @@ public class SecurityConfig {
 
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        // In a stateless application (like an API),
+        // you don’t want Spring Security to create or store a session on the server for each user request. Instead,
+        // authentication is typically handled using tokens (like JWTs),
+        // and each request must include the necessary credentials (like a token) for authentication.
+        //If you don't use STATELESS: Spring Security would create a session for each request,
+        // which is typically not desired for stateless APIs but might be useful in stateful web applications
+        // (like those using cookies for session management).
 
+        return http.build();
 
-
-        return http.build(); // This essentially creates the filter chain with the default security settings.
+        /*
+        // OR IN THE BUILDER PATTERN
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request ->
+                        request.anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build(); // This essentially creates the filter chain with the default security settings.
+        */
     }
 
 
